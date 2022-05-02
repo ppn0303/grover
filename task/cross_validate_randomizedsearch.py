@@ -92,16 +92,16 @@ def parametersearch(args: Namespace, logger: Logger = None) -> Tuple[float, floa
     task_names = get_task_names(args.data_path)
 
     #randomize parameter list
-    init_lr_list = [0.00001, 0.00002, 0.00003, 0.00004, 0.00005, 0.00006] # delete because this will be bad result in prior test, 0.00007, 0.00008, 0.00009, 0.0001]
+    init_lr_list = [0.00001, 0.00003, 0.00005] #[0.00001, 0.00002, 0.00003, 0.00004, 0.00005, 0.00006, 0.00007, 0.00008, 0.00009, 0.0001]
     dropout_list = [0, 0.05, 0.1, 0.15, 0.2]
 #    attn_hidden_list = [32, 64, 128, 192, 256]      #in paper this is 128 hold
     attn_out_list = [4, 8]
     dist_coff_list = [0.05, 0.1, 0.15]
     bond_drop_rate_list = [0, 0.2, 0.4, 0.6]
-    ffn_num_layer_list = [2, 3]
-    ffn_dense_list = [700, 800, 900, 1000]
+    ffn_num_layer_list = [2, 3, 4]
+    ffn_dense_list = [300, 400, 500, 600, 700]
 
-    # Run training with different random seeds for each fold, I worked this 2022.04.19
+    # Run training with different random seeds for each fold
     all_scores = []
     params = []
     time_start = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
@@ -124,13 +124,15 @@ def parametersearch(args: Namespace, logger: Logger = None) -> Tuple[float, floa
         info(params[iter_num])
 
         args.seed = init_seed                        # if change this, result will be change
-        args.save_dir = os.path.join(save_dir, f'iter_{iter_num}')
+        iter_dir = os.path.join(save_dir, f'iter_{iter_num}')
+        args.save_dir = iter_dir
         makedirs(args.save_dir)
+
         fold_scores = []
         for fold_num in range(args.num_folds):
             info(f'Fold {fold_num}')
             args.seed = init_seed + fold_num
-            args.save_dir = os.path.join(args.save_dir, f'fold_{fold_num}')
+            args.save_dir = os.path.join(iter_dir, f'fold_{fold_num}')
             makedirs(args.save_dir)
             if args.parser_name == "finetune":
                 model_scores = run_training(args, time_start, logger)
@@ -141,7 +143,8 @@ def parametersearch(args: Namespace, logger: Logger = None) -> Tuple[float, floa
         fold_scores = np.array(fold_scores)
 
         # Report scores for each fold
-        info(f'{args.num_folds}-fold validation')
+        info(f'\n{args.num_folds}-fold validation')
+        info(f'{params[iter_num]}\n')
 
         for fold_num, scores in enumerate(fold_scores):
             info(f'Seed {init_seed + fold_num} ==> test {args.metric} = {np.nanmean(scores):.6f}')
@@ -154,7 +157,7 @@ def parametersearch(args: Namespace, logger: Logger = None) -> Tuple[float, floa
         fold_avg_scores = np.nanmean(fold_scores, axis=1)  # average score for each model across tasks
         fold_mean_score, fold_std_score = np.nanmean(fold_avg_scores), np.nanstd(fold_avg_scores)
         info(f'overall_{args.split_type}_test_{args.metric}={fold_mean_score:.6f}')
-        info(f'std={fold_std_score:.6f}')
+        info(f'std={fold_std_score:.6f}\n')
 
         if args.show_individual_scores:
             for task_num, task_name in enumerate(task_names):
