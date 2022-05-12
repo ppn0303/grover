@@ -206,9 +206,9 @@ def add_finetune_args(parser: ArgumentParser):
     parser.add_argument('--self_attention', action='store_true', default=False, help='Use self attention layer. '
                                                                                      'Otherwise use mean aggregation '
                                                                                      'layer.')
-    parser.add_argument('--attn_hidden', type=int, default=4, nargs='?', help='Self attention layer '
+    parser.add_argument('--attn_hidden', type=int, default=128, nargs='?', help='Self attention layer '
                                                                               'hidden layer size.')
-    parser.add_argument('--attn_out', type=int, default=128, nargs='?', help='Self attention layer '
+    parser.add_argument('--attn_out', type=int, default=4, nargs='?', help='Self attention layer '
                                                                              'output feature size.')
 
     parser.add_argument('--dist_coff', type=float, default=0.1, help='The dist coefficient for output of two branches.')
@@ -226,7 +226,8 @@ def add_finetune_args(parser: ArgumentParser):
                         help='enable multi-GPU training')
 
     # For search
-    parser.add_argument('--randomsearch', action='store_true', default=False, help='search mode')
+    parser.add_argument('--randomsearch', action='store_true', default=False, help='randomsearch mode')
+    parser.add_argument('--gridsearch', action='store_true', default=False, help='gridsearch mode')
     parser.add_argument('--n_iters', type=int, default=1,
                         help='Number of search')
 
