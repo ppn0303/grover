@@ -6,12 +6,14 @@ from rdkit import RDLogger
 
 from grover.util.parsing import parse_args, get_newest_train_args
 from grover.util.utils import create_logger
-from task.cross_validate import cross_validate
+from task.cross_validate import cross_validate, randomsearch, gridsearch
 from task.fingerprint import generate_fingerprints
 from task.predict import make_predictions, write_prediction
 from task.pretrain import pretrain_model
 from grover.data.torchvocab import MolVocab
 
+#add for gridsearch
+from argparse import ArgumentParser, Namespace
 
 def setup(seed):
     # frozen random seed
@@ -20,7 +22,6 @@ def setup(seed):
     np.random.seed(seed)
     random.seed(seed)
     torch.backends.cudnn.deterministic = True
-
 
 if __name__ == '__main__':
     # setup random seed
@@ -37,7 +38,9 @@ if __name__ == '__main__':
     args = parse_args()
     if args.parser_name == 'finetune':
         logger = create_logger(name='train', save_dir=args.save_dir, quiet=False)
-        cross_validate(args, logger)
+        if args.randomsearch==True :  randomsearch(args, logger)
+        elif args.gridsearch==True : gridsearch(args, logger)
+        else : cross_validate(args, logger)
     elif args.parser_name == 'pretrain':
         logger = create_logger(name='pretrain', save_dir=args.save_dir)
         pretrain_model(args, logger)
@@ -53,3 +56,7 @@ if __name__ == '__main__':
         train_args = get_newest_train_args()
         avg_preds, test_smiles = make_predictions(args, train_args)
         write_prediction(avg_preds, test_smiles, args)
+    elif args.parser_name == 'gridsearch':
+        logger = create_logger(name='GridSearch', save_dir=args.save_dir)
+        pretrain_model(args, logger)
+       
