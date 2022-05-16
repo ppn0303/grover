@@ -99,7 +99,7 @@ def randomsearch(args: Namespace, logger: Logger = None) -> Tuple[float, float]:
     attn_out_list = [4, 8]
     dist_coff_list = [0.05, 0.1, 0.15, 0.20]
     bond_drop_rate_list = [0, 0.2, 0.4, 0.6]
-    ffn_num_layer_list = [2, 3]
+    ffn_num_layers_list = [2, 3]
     ffn_dense_list = [150, 170, 180, 190, 200, 210, 220, 230, 240, 250]
 
     # Run training with different random seeds for each fold
@@ -119,9 +119,9 @@ def randomsearch(args: Namespace, logger: Logger = None) -> Tuple[float, float]:
         args.attn_out = np.random.choice(attn_out_list, 1)[0]
         args.dist_coff = np.random.choice(dist_coff_list, 1)[0]
         args.bond_drop_rate = np.random.choice(bond_drop_rate_list, 1)[0]
-        args.ffn_num_layer = np.random.choice(ffn_num_layer_list, 1)[0]
+        args.ffn_num_layers = np.random.choice(ffn_num_layers_list, 1)[0]
         args.ffn_hidden_size = np.array(np.random.choice(ffn_dense_list, 1)[0])
-        params.append(f'\n{iter_num}th search parameter : init_lr is {args.init_lr} \n final_lr rate is {args.final_lr} \n dropout is {args.dropout} \n attn_out is {args.attn_out} \n dist_coff is {args.dist_coff} \n bond_drop_rate is {args.bond_drop_rate} \n ffn_num_layer is {args.ffn_num_layer} \n ffn_hidden_size is {args.ffn_hidden_size}')
+        params.append(f'\n{iter_num}th search parameter : init_lr is {args.init_lr} \n final_lr rate is {args.final_lr} \n dropout is {args.dropout} \n attn_out is {args.attn_out} \n dist_coff is {args.dist_coff} \n bond_drop_rate is {args.bond_drop_rate} \n ffn_num_layers is {args.ffn_num_layers} \n ffn_hidden_size is {args.ffn_hidden_size}')
         info(params[iter_num])
 
         args.seed = init_seed                        # if change this, result will be change
@@ -208,7 +208,7 @@ def gridsearch(args: Namespace, logger: Logger = None) -> Tuple[float, float]:
     init_lr_list = [0.00002, 0.00003, 0.00004, 0.00005, 0.00006, 0.00007] #[0.00001, 0.00002, 0.00003, 0.00004, 0.00005, 0.00006, 0.00007, 0.00008, 0.00009, 0.0001]
     lr_rate=[2,3,4,5,6,7,8,9,10]
     dropout_list = [0, 0.05, 0.1, 0.15, 0.2]
-    attn_hidden_list = 128
+    attn_hiddens_list = 128
     attn_out_list = [4, 8]
     dist_coff_list = [0.05, 0.1, 0.15, 0.20]
     bond_drop_rate_list = [0, 0.2, 0.4, 0.6]
@@ -224,7 +224,7 @@ def gridsearch(args: Namespace, logger: Logger = None) -> Tuple[float, float]:
 
         #select parameter
         args.ffn_hidden_size = ffn_dense_list[iter_num]
-        params.append(f'\n{iter_num}th search parameter : init_lr is {args.init_lr} \n final_lr rate is {args.final_lr} \n dropout is {args.dropout} \n attn_out is {args.attn_out} \n dist_coff is {args.dist_coff} \n bond_drop_rate is {args.bond_drop_rate} \n ffn_num_layer is {args.ffn_num_layer} \n ffn_hidden_size is {args.ffn_hidden_size}')
+        params.append(f'\n{iter_num}th search parameter : init_lr is {args.init_lr} \n final_lr rate is {args.final_lr} \n dropout is {args.dropout} \n attn_out is {args.attn_out} \n dist_coff is {args.dist_coff} \n bond_drop_rate is {args.bond_drop_rate} \n ffn_num_layers is {args.ffn_num_layers} \n ffn_hidden_size is {args.ffn_hidden_size}')
         info(params[iter_num])
 
         args.seed = init_seed                        # if change this, result will be change
